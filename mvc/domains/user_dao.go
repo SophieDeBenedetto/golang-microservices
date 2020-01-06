@@ -10,20 +10,21 @@ import (
 var (
 	users = map[int64]*User{
 		123: {
-			Id:        1,
+			ID:        123,
 			FirstName: "Sophie",
 			LastName:  "DeBenedetto",
-			Email:     "sophie@email.como",
+			Email:     "sophie@email.com",
 		},
 	}
 )
 
-func GetUser(userId int64) (*User, *utils.ApplicationError) {
-	if user := users[userId]; user != nil {
+// GetUser gets the user with the given ID or returns an error
+func GetUser(userID int64) (*User, *utils.ApplicationError) {
+	if user := users[userID]; user != nil {
 		return user, nil
 	}
 	return nil, &utils.ApplicationError{
-		Message: fmt.Sprintf("User %d not found", userId),
+		Message: fmt.Sprintf("User %d not found", userID),
 		Status:  http.StatusNotFound,
 		Code:    "not_found",
 	}
