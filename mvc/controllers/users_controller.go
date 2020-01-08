@@ -15,17 +15,17 @@ func GetUser(c *gin.Context) {
 	userID, err := (strconv.ParseInt(c.Param("user_id"), 10, 64))
 	if err != nil {
 		apiError := &utils.ApplicationError{
-			Message: "User ID must me a number",
+			Message: "User ID must be a number",
 			Status:  http.StatusBadRequest,
 			Code:    "bad_request",
 		}
-		c.JSON(apiError.Status, apiError)
+		utils.Respond(c, apiError.Status, apiError)
 		return
 	}
 	user, error := services.UsersService.GetUser(userID)
 	if error != nil {
-		c.JSON(error.Status, error)
+		utils.Respond(c, error.Status, error)
 		return
 	}
-	c.JSON(http.StatusOK, user)
+	utils.Respond(c, http.StatusOK, user)
 }
