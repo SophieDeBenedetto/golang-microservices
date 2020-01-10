@@ -1,5 +1,5 @@
-package api
+package main
 
-func api() {
+func main() {
 
 }
