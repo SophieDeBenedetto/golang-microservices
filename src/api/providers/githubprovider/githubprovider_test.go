@@ -2,7 +2,6 @@ package githubprovider
 
 import (
 	"bytes"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -100,7 +99,6 @@ func TestCreateRepoSuccess(t *testing.T) {
 }
 
 func TestCreateRepoInvalidResponseInterface(t *testing.T) {
-	fmt.Println("HERE")
 	json := `{"id":"sophie"}`
 	r := ioutil.NopCloser(bytes.NewReader([]byte(json)))
 	getDoFunc = func(*http.Request) (*http.Response, error) {

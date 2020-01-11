@@ -3,7 +3,9 @@ package services
 import (
 	"strings"
 
+	"github.com/SophieDeBenedetto/golang-microservices/src/api/config"
 	"github.com/SophieDeBenedetto/golang-microservices/src/api/domain/github"
+	"github.com/SophieDeBenedetto/golang-microservices/src/api/providers/githubprovider"
 
 	"github.com/SophieDeBenedetto/golang-microservices/src/api/domain/repositories"
 	"github.com/SophieDeBenedetto/golang-microservices/src/api/utils/errors"
@@ -31,9 +33,20 @@ func (s *repoService) CreateRepo(input repositories.CreateRepoRequest) (*reposit
 		err := errors.BadRequestError("Invalid repo name")
 		return nil, err
 	}
-	request := github.CreateRepoRequest{
-		Name: input.Name,
+	request := &github.CreateRepoRequest{
+		Name:        input.Name,
+		Description: input.Description,
+		Private:     false,
 	}
 
-	return &repositories.CreateRepoResponse{}, nil
+	response, err := githubprovider.CreateRepo(config.GetGithubAccessToken(), request)
+	if err != nil {
+		apiError := errors.NewAPIError(err.StatusCode, err.Message)
+		return nil, apiError
+	}
+	return &repositories.CreateRepoResponse{
+		ID:    response.ID,
+		Owner: response.Owner.Login,
+		Name:  response.Name,
+	}, nil
 }

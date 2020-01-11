@@ -35,6 +35,14 @@ func NotFound(message string) APIError {
 	}
 }
 
+// NewAPIError creates a new API error
+func NewAPIError(statusCode int, message string) APIError {
+	return &apiError{
+		Status:  statusCode,
+		Message: message,
+	}
+}
+
 // InternalServerError error struct
 func InternalServerError(message string) APIError {
 	return &apiError{

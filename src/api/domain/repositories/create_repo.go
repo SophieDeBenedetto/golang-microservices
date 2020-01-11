@@ -2,7 +2,8 @@ package repositories
 
 // CreateRepoRequest describes repo to be created
 type CreateRepoRequest struct {
-	Name string `json:"name"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
 }
 
 // CreateRepoResponse describes created repo
