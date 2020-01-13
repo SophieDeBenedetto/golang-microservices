@@ -28,8 +28,6 @@ func CreateRepo(accessToken string, request *github.CreateRepoRequest) (*github.
 	response, err := restclient.Post(createRepoURL, request, headers)
 	// check request success/failure
 	if err != nil {
-		x := err.Error()
-		fmt.Println(x)
 		log.Println(fmt.Sprintf("Error creating GitHub repo: %s", err.Error()))
 		return nil, &github.ErrorResponse{
 			StatusCode: http.StatusInternalServerError,

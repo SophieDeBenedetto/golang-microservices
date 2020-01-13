@@ -9,25 +9,13 @@ import (
 
 	"github.com/SophieDeBenedetto/golang-microservices/src/api/clients/restclient"
 	"github.com/SophieDeBenedetto/golang-microservices/src/api/domain/github"
+	"github.com/SophieDeBenedetto/golang-microservices/src/api/utils/mocks"
 
 	"github.com/stretchr/testify/assert"
 )
 
-type MockClient struct {
-	DoFunc func(req *http.Request) (*http.Response, error)
-}
-
-func (m *MockClient) Do(req *http.Request) (*http.Response, error) {
-	return getDoFunc(req)
-}
-
-var (
-	// mockClient MockClient
-	getDoFunc func(req *http.Request) (*http.Response, error)
-)
-
 func init() {
-	restclient.Client = &MockClient{}
+	restclient.Client = &mocks.MockClient{}
 }
 
 func TestConstants(t *testing.T) {
@@ -42,7 +30,7 @@ func TestGetAuthorizationHeader(t *testing.T) {
 
 func TestCreateRepoInvalidRestclientResponse(t *testing.T) {
 	r := ioutil.NopCloser(bytes.NewReader([]byte(`{"message":"Invalid token"}`)))
-	getDoFunc = func(*http.Request) (*http.Response, error) {
+	mocks.GetDoFunc = func(*http.Request) (*http.Response, error) {
 		return &http.Response{
 			StatusCode: 400,
 			Body:       r,
@@ -56,7 +44,7 @@ func TestCreateRepoInvalidRestclientResponse(t *testing.T) {
 
 func TestCreateRepoInvalidResponseBody(t *testing.T) {
 	r, _ := os.Open("-asdf123")
-	getDoFunc = func(*http.Request) (*http.Response, error) {
+	mocks.GetDoFunc = func(*http.Request) (*http.Response, error) {
 		return &http.Response{
 			Body: r,
 		}, nil
@@ -69,7 +57,7 @@ func TestCreateRepoInvalidResponseBody(t *testing.T) {
 
 func TestCreateRepoResponseWithError(t *testing.T) {
 	r := ioutil.NopCloser(bytes.NewReader([]byte(`{"message":"Not Found"}`)))
-	getDoFunc = func(*http.Request) (*http.Response, error) {
+	mocks.GetDoFunc = func(*http.Request) (*http.Response, error) {
 		return &http.Response{
 			StatusCode: 400,
 			Body:       r,
@@ -84,7 +72,7 @@ func TestCreateRepoResponseWithError(t *testing.T) {
 func TestCreateRepoSuccess(t *testing.T) {
 	json := `{"name":"Test Name","full_name":"test full name","owner":{"login": "octocat"}}`
 	r := ioutil.NopCloser(bytes.NewReader([]byte(json)))
-	getDoFunc = func(*http.Request) (*http.Response, error) {
+	mocks.GetDoFunc = func(*http.Request) (*http.Response, error) {
 		return &http.Response{
 			StatusCode: 200,
 			Body:       r,
@@ -101,7 +89,7 @@ func TestCreateRepoSuccess(t *testing.T) {
 func TestCreateRepoInvalidResponseInterface(t *testing.T) {
 	json := `{"id":"sophie"}`
 	r := ioutil.NopCloser(bytes.NewReader([]byte(json)))
-	getDoFunc = func(*http.Request) (*http.Response, error) {
+	mocks.GetDoFunc = func(*http.Request) (*http.Response, error) {
 		return &http.Response{
 			StatusCode: 200,
 			Body:       r,
