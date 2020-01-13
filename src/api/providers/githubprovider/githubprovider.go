@@ -28,6 +28,8 @@ func CreateRepo(accessToken string, request *github.CreateRepoRequest) (*github.
 	response, err := restclient.Post(createRepoURL, request, headers)
 	// check request success/failure
 	if err != nil {
+		x := err.Error()
+		fmt.Println(x)
 		log.Println(fmt.Sprintf("Error creating GitHub repo: %s", err.Error()))
 		return nil, &github.ErrorResponse{
 			StatusCode: http.StatusInternalServerError,
@@ -52,7 +54,7 @@ func CreateRepo(accessToken string, request *github.CreateRepoRequest) (*github.
 		var errResponse github.ErrorResponse
 		// decode response body JSON into github.ErrorResponse struct
 		if err := json.Unmarshal(bytes, &errResponse); err != nil {
-			fmt.Println(err)
+			log.Println(err)
 			return nil, &github.ErrorResponse{
 				StatusCode: response.StatusCode,
 				Message:    "Invalid JSON response body",

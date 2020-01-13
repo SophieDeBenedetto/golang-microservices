@@ -41,7 +41,7 @@ func (s *repoService) CreateRepo(input repositories.CreateRepoRequest) (*reposit
 
 	response, err := githubprovider.CreateRepo(config.GetGithubAccessToken(), request)
 	if err != nil {
-		apiError := errors.NewAPIError(err.StatusCode, err.Message)
+		apiError := errors.NewAPIError(err.StatusCode, err.Message, err.Errors)
 		return nil, apiError
 	}
 	return &repositories.CreateRepoResponse{
