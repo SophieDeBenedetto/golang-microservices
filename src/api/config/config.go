@@ -3,11 +3,11 @@ package config
 import "os"
 
 const (
-	apiGithubAcessToken = "SECRET_GITHUB_ACCESS_TOKEN"
+	secretGithubAccessToken = "SECRET_GITHUB_ACCESS_TOKEN"
 )
 
 var (
-	githubAccessToken = os.Getenv("SECRET_GITHUB_ACCESS_TOKEN")
+	githubAccessToken = os.Getenv(secretGithubAccessToken)
 )
 
 // GetGithubAccessToken returns the GH access token

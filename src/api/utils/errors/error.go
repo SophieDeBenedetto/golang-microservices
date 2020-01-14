@@ -1,6 +1,7 @@
 package errors
 
 import (
+	"encoding/json"
 	"net/http"
 
 	"github.com/SophieDeBenedetto/golang-microservices/src/api/domain/github"
@@ -62,4 +63,13 @@ func BadRequestError(message string) APIError {
 		Status:  http.StatusBadRequest,
 		Message: message,
 	}
+}
+
+// NewAPIErrorFromBytes returns the api error struct for the given byte slice
+func NewAPIErrorFromBytes(bytes []byte) (APIError, error) {
+	var result apiError
+	if err := json.Unmarshal(bytes, &result); err != nil {
+		return nil, err
+	}
+	return &result, nil
 }

@@ -46,13 +46,11 @@ func CreateRepo(accessToken string, request *github.CreateRepoRequest) (*github.
 			Message:    "Invalid response body",
 		}
 	}
-
 	// check response status
 	if response.StatusCode > 299 {
 		var errResponse github.ErrorResponse
 		// decode response body JSON into github.ErrorResponse struct
 		if err := json.Unmarshal(bytes, &errResponse); err != nil {
-			log.Println(err)
 			return nil, &github.ErrorResponse{
 				StatusCode: response.StatusCode,
 				Message:    "Invalid JSON response body",
