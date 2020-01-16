@@ -16,6 +16,7 @@ type repoService struct {
 
 type repoServiceInterface interface {
 	CreateRepo(input repositories.CreateRepoRequest) (*repositories.CreateRepoResponse, errors.APIError)
+	CreateRepos(input repositories.CreateRepoRequest) (*repositories.CreateReposResponse, errors.APIError)
 }
 
 var (
@@ -49,4 +50,9 @@ func (s *repoService) CreateRepo(input repositories.CreateRepoRequest) (*reposit
 		Owner: response.Owner.Login,
 		Name:  response.Name,
 	}, nil
+}
+
+// CreateRepos creates repos
+func CreateRepos(request []repositories.CreateRepoRequest) (*repositories.CreateReposResponse, errors.APIError) {
+
 }

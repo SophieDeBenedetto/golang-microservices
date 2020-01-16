@@ -1,5 +1,7 @@
 package repositories
 
+import "github.com/SophieDeBenedetto/golang-microservices/src/api/utils/errors"
+
 // CreateRepoRequest describes repo to be created
 type CreateRepoRequest struct {
 	Name        string `json:"name"`
@@ -11,4 +13,16 @@ type CreateRepoResponse struct {
 	ID    int64  `json:"id"`
 	Owner string `json:"owner"`
 	Name  string `json:"string"`
+}
+
+//CreateReposResponse describes created repos
+type CreateReposResponse struct {
+	StatusCode int                 `json:"status"`
+	Results    []CreateReposResult `json:"results"`
+}
+
+// CreateReposResult the result of creating multiple repos
+type CreateReposResult struct {
+	Response CreateRepoResponse `json:"repo"`
+	Error    errors.APIError    `json:"error"`
 }
