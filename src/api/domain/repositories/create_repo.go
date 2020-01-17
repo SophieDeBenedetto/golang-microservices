@@ -1,6 +1,10 @@
 package repositories
 
-import "github.com/SophieDeBenedetto/golang-microservices/src/api/utils/errors"
+import (
+	"strings"
+
+	"github.com/SophieDeBenedetto/golang-microservices/src/api/utils/errors"
+)
 
 // CreateRepoRequest describes repo to be created
 type CreateRepoRequest struct {
@@ -17,12 +21,22 @@ type CreateRepoResponse struct {
 
 //CreateReposResponse describes created repos
 type CreateReposResponse struct {
-	StatusCode int                 `json:"status"`
-	Results    []CreateReposResult `json:"results"`
+	StatusCode int                  `json:"status"`
+	Results    []*CreateReposResult `json:"results"`
 }
 
 // CreateReposResult the result of creating multiple repos
 type CreateReposResult struct {
-	Response CreateRepoResponse `json:"repo"`
-	Error    errors.APIError    `json:"error"`
+	Response *CreateRepoResponse `json:"repo"`
+	Error    errors.APIError     `json:"error"`
+}
+
+// Validate validates the create repo request
+func Validate(r CreateRepoRequest) errors.APIError {
+	repoName := strings.TrimSpace(r.Name)
+	if repoName == "" {
+		err := errors.BadRequestError("Invalid repo name")
+		return err
+	}
+	return nil
 }
