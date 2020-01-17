@@ -51,10 +51,22 @@ func (s *repoService) CreateRepo(input repositories.CreateRepoRequest) (*reposit
 	}, nil
 }
 
+// For each request, increment wait group counter and THEN spin off a go routine for that request
+// The concurrent go routine will make the individual create repo web request and send the result from that request to the input channel
+// The handleResponse func is iterating over the range of the input channel
+// For each result sent over the input channel, handleResponse will add to the collection of results and decrement wg count
+// Main routine's code execution will wait until wg count is back to 0, i.e. result from each concurrent request is "handled" and collected in results list
+// Then the input channel will be closed
+// When the input channel closes, handleResponse will STOP iterating over the range of input to that channel
+// Then, handleResponse will be able to exit the `for` loop and move onto next line, which is sending output (CrateReposResponse) with collection of results to the output channel
+// Back in main routine, code is blocking until this output is received/read from the output channel
+// Once output is received, it is decorated and returned
+// BUT wait! We set a `defer close(output)` so just before CreateRepos func returns, it will close the output channel
+
 // CreateRepos creates repos
 func (s *repoService) CreateRepos(request []repositories.CreateRepoRequest) (*repositories.CreateReposResponse, errors.APIError) {
 	input := make(chan *repositories.CreateReposResult)
-	output := make(chan repositories.CreateReposResponse)
+	output := make(chan *repositories.CreateReposResponse)
 	defer close(output)
 	var wg sync.WaitGroup
 
@@ -69,8 +81,8 @@ func (s *repoService) CreateRepos(request []repositories.CreateRepoRequest) (*re
 	close(input)
 
 	response := <-output
-	calculateResponseStatus(request, &response)
-	return &response, nil
+	calculateResponseStatus(request, response)
+	return response, nil
 }
 
 func (s *repoService) createRepoConcurrent(input repositories.CreateRepoRequest, output chan *repositories.CreateReposResult) {
@@ -92,13 +104,13 @@ func (s *repoService) createRepoConcurrent(input repositories.CreateRepoRequest,
 	}
 }
 
-func (s *repoService) handleRepoResults(wg *sync.WaitGroup, input chan *repositories.CreateReposResult, output chan repositories.CreateReposResponse) {
+func (s *repoService) handleRepoResults(wg *sync.WaitGroup, input chan *repositories.CreateReposResult, output chan *repositories.CreateReposResponse) {
 	var response repositories.CreateReposResponse
 	for result := range input {
 		response.Results = append(response.Results, result)
 		wg.Done()
 	}
-	output <- response
+	output <- &response
 }
 
 func calculateResponseStatus(request []repositories.CreateRepoRequest, response *repositories.CreateReposResponse) {
