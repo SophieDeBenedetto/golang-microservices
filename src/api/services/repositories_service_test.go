@@ -5,6 +5,7 @@ import (
 	errs "errors"
 	"io/ioutil"
 	"net/http"
+	"strings"
 	"sync"
 	"testing"
 
@@ -129,4 +130,66 @@ func TestHandleRepoResults(t *testing.T) {
 	assert.NotNil(t, result)
 	assert.EqualValues(t, http.StatusBadRequest, result.Error.GetStatus())
 	assert.Nil(t, result.Response)
+}
+
+func TestCreateReposInvalidRequest(t *testing.T) {
+	requests := []repositories.CreateRepoRequest{
+		{},
+		{Name: ""},
+	}
+	resp, err := RepoService.CreateRepos(requests)
+	assert.Nil(t, err)
+	assert.NotNil(t, resp)
+	first := resp.Results[0]
+	second := resp.Results[1]
+	assert.EqualValues(t, http.StatusBadRequest, resp.StatusCode)
+	assert.EqualValues(t, "Invalid repo name", first.Error.GetMessage())
+	assert.EqualValues(t, "Invalid repo name", second.Error.GetMessage())
+
+}
+
+func TestCreateReposPartialInvalidRequest(t *testing.T) {
+	json := `{"name":"Test Name","full_name":"test full name","owner":{"login": "octocat"}}`
+	r := ioutil.NopCloser(strings.NewReader(json))
+	mocks.GetDoFunc = func(*http.Request) (*http.Response, error) {
+		return &http.Response{
+			StatusCode: http.StatusOK,
+			Body:       r,
+		}, nil
+	}
+	requests := []repositories.CreateRepoRequest{
+		{Name: "Test Name"},
+		{Name: ""},
+	}
+	resp, err := RepoService.CreateRepos(requests)
+	assert.Nil(t, err)
+	assert.NotNil(t, resp)
+	failure := resp.Results[0]
+	success := resp.Results[1]
+	assert.EqualValues(t, http.StatusPartialContent, resp.StatusCode)
+	assert.EqualValues(t, "Test Name", success.Response.Name)
+	assert.EqualValues(t, "Invalid repo name", failure.Error.GetMessage())
+}
+
+func TestCreateReposSuccess(t *testing.T) {
+	json := `{"name":"Test Name","full_name":"test full name","owner":{"login": "octocat"}}`
+	mocks.GetDoFunc = func(*http.Request) (*http.Response, error) {
+		r := ioutil.NopCloser(strings.NewReader(json))
+		return &http.Response{
+			StatusCode: http.StatusOK,
+			Body:       r,
+		}, nil
+	}
+	requests := []repositories.CreateRepoRequest{
+		{Name: "Test Name"},
+		{Name: "Test Name 2"},
+	}
+	resp, err := RepoService.CreateRepos(requests)
+	assert.Nil(t, err)
+	assert.NotNil(t, resp)
+	first := resp.Results[0]
+	second := resp.Results[1]
+	assert.EqualValues(t, http.StatusCreated, resp.StatusCode)
+	assert.EqualValues(t, "Test Name", first.Response.Name)
+	assert.EqualValues(t, "Test Name", second.Response.Name)
 }
