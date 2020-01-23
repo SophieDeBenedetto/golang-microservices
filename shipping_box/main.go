@@ -76,7 +76,7 @@ func concurrentGetBestBox(totalProductVol int, availableBoxes []Box) Box {
 
 func collectBoxResult(input chan BoxResult, output chan Box, wg *sync.WaitGroup) {
 	var bestFit int
-	started := false
+	var started bool
 	var bestBox Box
 	for result := range input {
 		if !started {
@@ -85,9 +85,7 @@ func collectBoxResult(input chan BoxResult, output chan Box, wg *sync.WaitGroup)
 				bestFit = result.Fit
 			}
 		}
-		// fmt.Println(result.Fit)
-		// fmt.Println(bestFit)
-		// fmt.Println("---")
+
 		if result.Fit >= 0 && result.Fit <= bestFit {
 			bestFit = result.Fit
 			bestBox = result.Box
