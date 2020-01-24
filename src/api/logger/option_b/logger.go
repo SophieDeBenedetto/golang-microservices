@@ -1,6 +1,7 @@
 package option_b
 
 import (
+	"fmt"
 	"strings"
 
 	"go.uber.org/zap/zapcore"
@@ -19,7 +20,12 @@ func init() {
 		Encoding:    "json",
 		Level:       zap.NewAtomicLevelAt(zap.InfoLevel),
 		EncoderConfig: zapcore.EncoderConfig{
-			MessageKey: "msg",
+			MessageKey:   "msg",
+			LevelKey:     "level",
+			TimeKey:      "time",
+			EncodeTime:   zapcore.ISO8601TimeEncoder,
+			EncodeLevel:  zapcore.LowercaseLevelEncoder,
+			EncodeCaller: zapcore.ShortCallerEncoder,
 		},
 	}
 	var err error
@@ -44,7 +50,8 @@ func Info(msg string, tags ...string) {
 }
 
 // Error prints a log with level Error
-func Error(msg string, tags ...string) {
+func Error(msg string, err error, tags ...string) {
+	msg = fmt.Sprintf("%s - ERROR - %v", msg, err)
 	fields := parseFields(tags...)
 	Logger.Error(msg, fields...)
 	Logger.Sync()
