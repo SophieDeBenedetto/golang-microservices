@@ -5,7 +5,9 @@ import "os"
 const (
 	secretGithubAccessToken = "SECRET_GITHUB_ACCESS_TOKEN"
 	// LogLevel describes the log level
-	LogLevel = "info"
+	LogLevel      = "info"
+	goEnvironment = "GO_ENV"
+	production    = "production"
 )
 
 var (
@@ -19,5 +21,5 @@ func GetGithubAccessToken() string {
 
 // IsProduction returns true for a prod env
 func IsProduction() bool {
-	return os.Getenv("GO_ENV") == "production"
+	return os.Getenv(goEnvironment) == production
 }

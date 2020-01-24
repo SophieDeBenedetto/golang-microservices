@@ -1,7 +1,7 @@
 package app
 
 import (
-	"github.com/SophieDeBenedetto/golang-microservices/src/api/logger"
+	"github.com/SophieDeBenedetto/golang-microservices/src/api/logger/option_b"
 	"github.com/gin-gonic/gin"
 )
 
@@ -16,7 +16,8 @@ func init() {
 // StartApp runs the webserver
 func StartApp() {
 	mapUrls()
-	logger.Logger.Info("Starting App!")
+	option_b.Info("Starting App!", "step1:starting", "status:pending")
+	// logger.Logger.Info("Starting App!", "step1:starting", "status:pending")
 	err := router.Run(":8080")
 	if err != nil {
 		panic(err)
