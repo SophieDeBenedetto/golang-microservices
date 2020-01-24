@@ -1,8 +1,7 @@
 package app
 
 import (
-	"fmt"
-
+	"github.com/SophieDeBenedetto/golang-microservices/src/api/logger"
 	"github.com/gin-gonic/gin"
 )
 
@@ -17,7 +16,7 @@ func init() {
 // StartApp runs the webserver
 func StartApp() {
 	mapUrls()
-	fmt.Println("Starting app...")
+	logger.Logger.Info("Starting App!")
 	err := router.Run(":8080")
 	if err != nil {
 		panic(err)
