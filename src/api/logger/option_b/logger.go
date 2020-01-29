@@ -1,4 +1,4 @@
-package option_b
+package logger
 
 import (
 	"fmt"
